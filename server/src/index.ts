@@ -12,7 +12,12 @@ require("dotenv").config();
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(
+    cors({
+      origin: ["http://localhost:3000", "https://saanjh-sahayak.abhiramverse.tech"],
+      credentials: true,
+    })
+  );
 
 app.use("/api/v1/caretaker", caretakerRouter);
 app.use("/api/v1/doctor", doctorRouter);
