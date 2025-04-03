@@ -16,19 +16,20 @@ export const signup = async (req: Request, res: Response) => {
       return res.status(400).json({
         error: "Validation failed",
         details: validationResult.error.flatten().fieldErrors,
+      
       });
     }
 
     const { username, email, password } = validationResult.data;
 
     // Check if email already exists
-    const existingDoctor = await db
+    const existingCaretaker = await db
       .select()
       .from(doctorsTable)
       .where(eq(doctorsTable.email, email))
       .execute();
 
-    if (existingDoctor.length > 0) {
+    if (existingCaretaker.length > 0) {
       return res.status(409).json({ error: "Email already in use" });
     }
 
@@ -36,28 +37,20 @@ export const signup = async (req: Request, res: Response) => {
     const saltRounds = parseInt(process.env.SALT_ROUNDS!) || 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Insert new doctor into database
-    const [newDoctor] = await db
+    // Insert new caretaker into database
+    const [newCaretaker] = await db
       .insert(doctorsTable)
       .values({
         username,
         email,
         password: hashedPassword
       })
-      .returning({
-        id: doctorsTable.id,
-        username: doctorsTable.username,
-        email: doctorsTable.email
-      })
+      .returning()
       .execute();
 
     return res.status(201).json({
-      message: "Doctor created successfully",
-      doctor: {
-        id: newDoctor.id,
-        email: newDoctor.email,
-        name: newDoctor.username
-      }
+      message: "User created successfully",
+      newCaretaker
     });
 
   } catch (e: any) {
@@ -68,13 +61,10 @@ export const signup = async (req: Request, res: Response) => {
 
 export const signin = async (req: Request, res: Response) => {
   try {
-    console.log("Doctor signin attempt:", { email: req.body.email });
-    
     // Validate request body against the schema
     const validationResult = SigninSchema.safeParse(req.body);
     
     if (!validationResult.success) {
-      console.log("Validation failed:", validationResult.error.flatten().fieldErrors);
       return res.status(400).json({
         error: "Validation failed",
         details: validationResult.error.flatten().fieldErrors,
@@ -84,48 +74,29 @@ export const signin = async (req: Request, res: Response) => {
     const { email, password } = validationResult.data;
 
     // Check if user exists
-    console.log("Querying doctor with email:", email);
-    const [doctor] = await db
-      .select({
-        id: doctorsTable.id,
-        username: doctorsTable.username,
-        email: doctorsTable.email,
-        password: doctorsTable.password,
-      })
+    const [caretaker] = await db
+      .select()
       .from(doctorsTable)
       .where(eq(doctorsTable.email, email))
       .execute();
 
-    if (!doctor) {
-      console.log("No doctor found with email:", email);
+    if (!caretaker) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    console.log("Doctor found, verifying password");
     // Compare passwords
-    const isPasswordValid = await bcrypt.compare(password, doctor.password);
+    const isPasswordValid = await bcrypt.compare(password, caretaker.password);
     if (!isPasswordValid) {
-      console.log("Invalid password for doctor:", email);
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Remove password from response and format doctor data
-    const { password: _, ...doctorData } = doctor;
-    const responseData = {
+    return res.status(200).json({
       message: "Login successful",
-      doctor: {
-        id: doctorData.id,
-        email: doctorData.email,
-        name: doctorData.username,
-      }
-    };
-    
-    console.log("Login successful for doctor:", { email: doctorData.email, id: doctorData.id });
-    return res.status(200).json(responseData);
+      caretaker
+    });
 
   } catch (e: any) {
-    console.error("Signin error:", e.message || e);
-    console.error("Stack trace:", e.stack);
+    console.error(`Error: ${e.message || e}`);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };

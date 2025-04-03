@@ -120,7 +120,11 @@ export default function DoctorDashboard() {
           toast.error("Session expired. Please sign in again")
           localStorage.removeItem("user")
           router.push("/signin")
-        } else {
+        }if (error.response?.status === 404) {
+          toast.error("No Old Age Home is assigned to you")
+          setOldAgeHomes([]); 
+        }  
+        else {
           toast.error(error.message || "Failed to load dashboard data")
         }
       } finally {

@@ -204,9 +204,9 @@ export default function SignUp() {
                       Or continue with
                     </span>
                   </div>
-                </div> */}
+                </div>
 
-                {/* <Button
+                <Button
                   type="button"
                   variant="outline"
                   className="w-full flex items-center justify-center gap-2"

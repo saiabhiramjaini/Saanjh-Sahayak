@@ -14,7 +14,10 @@ const reports_routes_1 = __importDefault(require("./routes/reports.routes"));
 require("dotenv").config();
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({
+    origin: ["http://localhost:3000", "https://saanjh-sahayak.abhiramverse.tech"],
+    credentials: true,
+}));
 app.use("/api/v1/caretaker", caretaker_routes_1.default);
 app.use("/api/v1/doctor", doctor_routes_1.default);
 app.use("/api/v1/oldagehome", oldagehome_routes_1.default);

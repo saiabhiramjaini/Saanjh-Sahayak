@@ -78,9 +78,10 @@ export default function CaretakerDashboard() {
       } catch (error: any) {
         console.error("Error fetching data:", error)
         if (error.response?.status === 404) {
-          // No old age home found for this caretaker
+          toast.error("No Old Age Home is registered by you.")
           setOldAgeHome(null)
-        } else {
+        } 
+        else {
           toast.error("Failed to load dashboard data")
         }
       } finally {

@@ -1,15 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { DashboardLayout } from "../../../../components/dashboard-layout"
+import { DashboardLayout } from "@/components/dashboard-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, FileText, User, Heart, Phone } from "lucide-react"
 import axios from "axios"
 import { toast } from "sonner"
-import { Skeleton } from "@/components/ui/skeleton"
 
 interface Patient {
   id: number
@@ -26,9 +24,10 @@ interface Patient {
   updatedAt: string
 }
 
-export default function PatientDetailsPage({ params }: { params: { id: string } }) {
+export default function PatientDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
-  const patientId = params.id
+  const resolvedParams = React.use(params);
+  const patientId = resolvedParams.id;
   const [patient, setPatient] = useState<Patient | null>(null)
   const [loading, setLoading] = useState(true)
 

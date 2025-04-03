@@ -70,42 +70,27 @@ export default function SignIn() {
 
       const response = await axios.post(endpoint, data);
 
-      // Validate response data structure
-      if (role === "doctor" && !response.data.doctor) {
-        throw new Error("Invalid response: Missing doctor data");
-      }
-      if (role === "caretaker" && !response.data.caretaker) {
-        throw new Error("Invalid response: Missing caretaker data");
-      }
-
-      // Store user data in localStorage with proper role handling
+      // Store user data in localStorage with the same structure as signup
       const userData = {
-        id: role === "caretaker" ? response.data.caretaker.id : response.data.doctor.id,
-        email: role === "caretaker" ? response.data.caretaker.email : response.data.doctor.email,
-        name: role === "caretaker" ? response.data.caretaker.name : response.data.doctor.name,
+        id: response.data.caretaker.id,
+        email: response.data.caretaker.email,
         role: role,
       };
-
-      // Validate user data before storing
-      if (!userData.id || !userData.email) {
-        throw new Error("Invalid user data received from server");
-      }
-
       localStorage.setItem("user", JSON.stringify(userData));
       
       // Redirect based on role
       router.push(role === "caretaker" ? "/caretaker" : "/doctor");
     } catch (error: any) {
       if (error.response?.status === 401) {
-        toast.error("Invalid email or password. Please try again.");
+        toast("Invalid email or password. Please try again.");
       } else if (error.response?.status === 400) {
         const validationErrors = error.response.data.details;
         const errorMessages = Object.entries(validationErrors)
           .map(([field, errors]) => `${field}: ${(errors as string[]).join(", ")}`)
           .join("\n");
-        toast.error(`Validation errors:\n${errorMessages}`);
+        toast(`Validation errors:\n${errorMessages}`);
       } else {
-        toast.error(error.message || "Something went wrong. Please try again.");
+        toast("Something went wrong. Please try again.");
       }
       console.error("Signin error:", error);
     }
@@ -206,9 +191,9 @@ export default function SignIn() {
                       Or continue with
                     </span>
                   </div>
-                </div> */}
+                </div>
 
-                {/* <Button
+                <Button
                   type="button"
                   variant="outline"
                   className="w-full flex items-center justify-center gap-2"
