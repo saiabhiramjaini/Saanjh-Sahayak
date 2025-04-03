@@ -1,0 +1,25 @@
+# Flask & Backend Dependencies
+flask
+flask-cors
+
+# AI & LLM Integration
+google-generativeai  # Gemini API
+huggingface # Hugging Face models (LLMs)
+huggingface_hub  # Hugging Face models (BLIP)
+together  # Together AI API
+
+
+# Text Processing
+pypdf  # Extract text from PDFs
+python-docx  # Extract text from Word documents
+
+# Image Processing (for AI-based Diagnosis)
+Pillow  # Image handling
+torch  # Required for deep learning models
+torchvision  # Vision-based AI models
+
+# Environment Variables & Logging
+python-dotenv  # Manage API keys & environment variables
+
+# Deployment & Misc
+requests  # Handling API calls
